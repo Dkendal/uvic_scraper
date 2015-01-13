@@ -1,0 +1,2 @@
+defmodule UvicScraper do
+end
