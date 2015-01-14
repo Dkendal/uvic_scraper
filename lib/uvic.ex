@@ -59,7 +59,7 @@ defmodule UVic do
       [ {:one_subj, subjects} ]
     end
 
-    get!("bwckctlg.p_display_courses?" <> URI.encode_query(q))
+    post!("bwckctlg.p_display_courses?", URI.encode_query(q))
   end
 
   def subject_list(year, month) do
