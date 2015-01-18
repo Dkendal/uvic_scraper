@@ -36,8 +36,8 @@ defmodule UVic do
   #   sel_dept=
   #   sel_attr=
 
-  def course_list(year, month, subjects, course_start..course_end) do
-    courses = display_courses(year, month, subjects, course_start, course_end).body
+  def course_list(year, semester, subjects, course_start..course_end) do
+    courses = display_courses(year, semester, subjects, course_start, course_end).body
     |> Floki.find(".nttitle")
     |> Floki.find("a")
 
@@ -47,11 +47,26 @@ defmodule UVic do
     end
   end
 
+  def subject_list(year, semester) do
+    display_courses(year, semester).body
+    |> Floki.find("#subj_id")
+    |> Floki.find("option")
+    |> Floki.attribute("value")
+  end
+
+  defp semesters do
+    %{
+      spring: "01",
+      summer: "05",
+      winter: "09"
+    }
+  end
+
   defp display_courses(year, month, subjects \\ [], course_start \\ "",
     course_end \\ "") when is_list( subjects ) do
 
     q = [
-      { :term_in,  year <> month },
+      { :term_in,  year <> semesters[month] },
       { :sel_subj, ""},
       { :sel_levl, ""},
       { :sel_schd, ""},
@@ -73,12 +88,5 @@ defmodule UVic do
     end
 
     post!("bwckctlg.p_display_courses", URI.encode_query(q))
-  end
-
-  def subject_list(year, month) do
-    display_courses(year, month).body
-    |> Floki.find("#subj_id")
-    |> Floki.find("option")
-    |> Floki.attribute("value")
   end
 end

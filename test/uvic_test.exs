@@ -8,7 +8,7 @@ defmodule UVicTest do
 
   test "course_list" do
     use_cassette "course_list_csc" do
-      result = UVic.course_list "2015", "01", ["CSC"], "100".."140"
+      result = UVic.course_list "2015", :spring, ["CSC"], "100".."140"
       assert is_list result
       assert is_tuple hd result
       assert {"CSC", "100", "ELEMENTARY COMPUTING"} = hd( result )
@@ -17,7 +17,7 @@ defmodule UVicTest do
 
   test "subject_list" do
     use_cassette "display_courses_term_only" do
-      result = UVic.subject_list("2015", "01")
+      result = UVic.subject_list("2015", :spring)
       assert is_list result
       assert "CYCB" = hd result
     end
