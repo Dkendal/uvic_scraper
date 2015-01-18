@@ -42,8 +42,8 @@ defmodule UVic do
     |> Floki.find("a")
 
     Enum.map courses, fn(course) ->
-      [dep, course, _ | title] = Floki.text(course) |> String.split(" ")
-      { dep, course, Enum.join(title, " ") }
+      [dep, course_number, _ | title] = Floki.text(course) |> String.split(" ")
+      { dep, course_number, Enum.join(title, " ") }
     end
   end
 
