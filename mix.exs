@@ -26,6 +26,7 @@ defmodule UvicScraper.Mixfile do
   # Type `mix help deps` for more examples and options
   defp deps do
     [
+      {:pattern_tap, "~> 0.2.1"},
       {:exvcr, "~> 0.3.5"},
       {:httpoison, "~> 0.5"},
       {:floki, "~> 0.0.5"}

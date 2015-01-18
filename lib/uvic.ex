@@ -1,5 +1,6 @@
 defmodule UVic do
   use HTTPoison.Base
+  use PatternTap
 
   @semesters %{
     spring: "01",
