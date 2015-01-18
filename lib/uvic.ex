@@ -1,6 +1,12 @@
 defmodule UVic do
   use HTTPoison.Base
 
+  @semesters %{
+    spring: "01",
+    summer: "05",
+    winter: "09"
+  }
+
   def process_url(url) do
     "https://www.uvic.ca/BAN2P/" <> url
   end
@@ -37,11 +43,10 @@ defmodule UVic do
   #   sel_attr=
 
   def course_list(year, semester, subjects, course_start..course_end) do
-    courses = display_courses(year, semester, subjects, course_start, course_end).body
+    display_courses(year, semester, subjects, course_start, course_end).body
     |> Floki.find(".nttitle")
     |> Floki.find("a")
-
-    Enum.map courses, fn(course) ->
+    |> Enum.map fn(course) ->
       [dep, course_number, _ | title] = Floki.text(course) |> String.split(" ")
       { dep, course_number, Enum.join(title, " ") }
     end
@@ -54,19 +59,11 @@ defmodule UVic do
     |> Floki.attribute("value")
   end
 
-  defp semesters do
-    %{
-      spring: "01",
-      summer: "05",
-      winter: "09"
-    }
-  end
-
   defp display_courses(year, month, subjects \\ [], course_start \\ "",
     course_end \\ "") when is_list( subjects ) do
 
     q = [
-      { :term_in,  year <> semesters[month] },
+      { :term_in,  year <> @semesters[month] },
       { :sel_subj, ""},
       { :sel_levl, ""},
       { :sel_schd, ""},
