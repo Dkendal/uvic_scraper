@@ -26,7 +26,7 @@ defmodule UVicTest do
   test "course_requirements" do
     use_cassette "course_requirements" do
       result = UVic.course_requirements("2015", :spring, "SENG", "462")
-      assert "(Undergraduate level SENG 330 Minimum Grade of D or Undergraduate level SENG 271 Minimum Grade of D or Undergraduate level SENG 299 Minimum Grade of D or Undergraduate level CENG 356 Minimum Grade of D) and (Undergraduate level CENG 460 Minimum Grade of D or Undergraduate level CSC 361 Minimum Grade of D)" == result
+      assert "( SENG 330 or SENG 271 or SENG 299 or CENG 356 ) and ( CENG 460 or CSC 361 )" == result
     end
   end
 end
