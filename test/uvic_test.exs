@@ -15,14 +15,6 @@ defmodule UVicTest do
     end
   end
 
-  test "display_courses" do
-    use_cassette "display_courses_term_only" do
-      assert_raise FunctionClauseError, fn ->
-        UVic.display_courses("2015", "01", "")
-      end
-    end
-  end
-
   test "subject_list" do
     use_cassette "display_courses_term_only" do
       result = UVic.subject_list("2015", "01")

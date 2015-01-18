@@ -47,7 +47,7 @@ defmodule UVic do
     end
   end
 
-  def display_courses(year, month, subjects \\ [], course_start \\ "",
+  defp display_courses(year, month, subjects \\ [], course_start \\ "",
     course_end \\ "") when is_list( subjects ) do
 
     q = [
