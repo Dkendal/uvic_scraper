@@ -10,11 +10,6 @@ defmodule UVic do
   def process_url(url) do
     "https://www.uvic.ca/BAN2P/" <> url
   end
-  # course requirements
-  # /BAN2P/bwckctlg.p_disp_course_detail?
-  #   cat_term_in=201501
-  #   subj_code_in=CSC
-  #   crse_numb_in=320
 
   # class schedules
   # /BAN2P/bwckctlg.p_disp_listcrse?
@@ -27,20 +22,6 @@ defmodule UVic do
   # /BAN2P/bwckschd.p_disp_detail_sched?
   #   term_in=201501
   #   crn_in=20711
-
-  # course listings
-  # /BAN2P/bwckctlg.p_display_courses?
-  #   term_in=201501
-  #   one_subj=CSC
-  #   sel_crse_strt=320
-  #   sel_crse_end=320
-  #   sel_subj=
-  #   sel_levl=
-  #   sel_schd=
-  #   sel_coll=
-  #   sel_divs=
-  #   sel_dept=
-  #   sel_attr=
 
   def course_list(year, semester, subjects, course_start..course_end) do
     display_courses(year, semester, subjects, course_start, course_end).body
@@ -59,11 +40,37 @@ defmodule UVic do
     |> Floki.attribute("value")
   end
 
-  defp display_courses(year, month, subjects \\ [], course_start \\ "",
+  def course_requirements(year, semester, subject, number) do
+    disp_course_detail(year, semester, subject, number).body
+    # html structure of source is ass so use regex :'(
+    |> fn(x) -> Regex.run(~r/Faculty.*\n.*\n(.*)/, x) end.()
+    |> List.last
+    |> fn(x) -> Regex.replace(~r/\<A.*?\>|\<\/A\>/, x, "" ) end.()
+    |> String.split(" ")
+    |> Enum.filter(&("" != &1))
+    |> Enum.join(" ")
+  end
+
+  defp term(year, semester), do: year <> @semesters[semester]
+
+  # course listings
+  # /BAN2P/bwckctlg.p_display_courses?
+  #   term_in=201501
+  #   one_subj=CSC
+  #   sel_crse_strt=320
+  #   sel_crse_end=320
+  #   sel_subj=
+  #   sel_levl=
+  #   sel_schd=
+  #   sel_coll=
+  #   sel_divs=
+  #   sel_dept=
+  #   sel_attr=
+  defp display_courses(year, semester, subjects \\ [], course_start \\ "",
     course_end \\ "") when is_list( subjects ) do
 
     q = [
-      { :term_in,  year <> @semesters[month] },
+      { :term_in,  term(year,semester) },
       { :sel_subj, ""},
       { :sel_levl, ""},
       { :sel_schd, ""},
@@ -85,5 +92,19 @@ defmodule UVic do
     end
 
     post!("bwckctlg.p_display_courses", URI.encode_query(q))
+  end
+
+  # course requirements
+  # /BAN2P/bwckctlg.p_disp_course_detail?
+  #   cat_term_in=201501
+  #   subj_code_in=CSC
+  #   crse_numb_in=320
+  defp disp_course_detail year, semester, subject, number do
+    [
+      { :cat_term_in, term(year, semester) },
+      { :subj_code_in, subject },
+      { :crse_numb_in, number } ]
+    |> URI.encode_query
+    |> fn(x) -> post!("bwckctlg.p_disp_course_detail", x) end.()
   end
 end

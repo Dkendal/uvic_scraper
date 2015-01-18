@@ -22,4 +22,12 @@ defmodule UVicTest do
       assert "CYCB" = hd result
     end
   end
+
+  test "course_requirements" do
+    use_cassette "course_requirements" do
+      result = UVic.course_requirements("2015", :spring, "SENG", "462")
+      |> IO.inspect
+      #assert "(Undergraduate level SENG 330 Minimum Grade of D or Undergraduate level SENG 271 Minimum Grade of D or Undergraduate level SENG 299 Minimum Grade of D or Undergraduate level CENG 356 Minimum Grade of D) and (Undergraduate level CENG 460 Minimum Grade of D or Undergraduate level CSC 361 Minimum Grade of D)" = result
+    end
+  end
 end
