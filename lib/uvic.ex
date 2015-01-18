@@ -1,6 +1,3 @@
-
-
-
 defmodule UVic do
   use HTTPoison.Base
 
@@ -39,6 +36,17 @@ defmodule UVic do
   #   sel_dept=
   #   sel_attr=
 
+  def course_list(year, month, subjects, course_start..course_end) do
+    courses = display_courses(year, month, subjects, course_start, course_end).body
+    |> Floki.find(".nttitle")
+    |> Floki.find("a")
+
+    Enum.map courses, fn(course) ->
+      [dep, course, _ | title] = Floki.text(course) |> String.split(" ")
+      { dep, course, Enum.join(title, " ") }
+    end
+  end
+
   def display_courses(year, month, subjects \\ [], course_start \\ "",
     course_end \\ "") when is_list( subjects ) do
 
@@ -60,7 +68,11 @@ defmodule UVic do
       [ { :sel_crse_end, course_end } ]
     end
 
-    post!("bwckctlg.p_display_courses?", URI.encode_query(q))
+    q = q ++ if (is_list subjects) do
+      Enum.map subjects, fn (x) -> {:sel_subj, x} end
+    end
+
+    post!("bwckctlg.p_display_courses", URI.encode_query(q))
   end
 
   def subject_list(year, month) do
