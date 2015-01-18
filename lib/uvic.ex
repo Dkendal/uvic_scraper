@@ -39,24 +39,25 @@ defmodule UVic do
   #   sel_dept=
   #   sel_attr=
 
+  def display_courses(year, month, subjects \\ [], course_start \\ "",
+    course_end \\ "") when is_list( subjects ) do
 
-  def display_courses(year, month, course_start \\ "", course_end \\ "", subjects \\ "") do
     q = [
-      { :term_in, year <> month },
-      { :sel_crse_strt, course_start },
-      { :sel_crse_end, course_end },
-      { :sel_subj, "" },
-      { :sel_levl, "" },
-      { :sel_schd, "" },
-      { :sel_coll, "" },
-      { :sel_divs, "" },
-      { :sel_dept, "" },
-      { :sel_attr, "" } ]
+      { :term_in,  year <> month },
+      { :sel_subj, ""},
+      { :sel_levl, ""},
+      { :sel_schd, ""},
+      { :sel_coll, ""},
+      { :sel_divs, ""},
+      { :sel_dept, ""},
+      { :sel_attr, ""} ]
 
-    q ++ if (is_list subjects) do
-      Enum.map subjects, fn (x) -> {:sel_subj, x} end
-    else
-      [ {:one_subj, subjects} ]
+    q = q ++ if (course_start && course_end) do
+      [ { :sel_crse_strt, course_start }]
+    end
+
+    q = q ++ if (course_end) do
+      [ { :sel_crse_end, course_end } ]
     end
 
     post!("bwckctlg.p_display_courses?", URI.encode_query(q))
