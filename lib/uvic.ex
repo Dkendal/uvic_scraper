@@ -44,12 +44,12 @@ defmodule UVic do
   def course_requirements(year, semester, subject, number) do
     disp_course_detail(year, semester, subject, number).body
     # html structure of source is ass so use regex :'(
-    |> fn(x) -> Regex.run(~r/Faculty.*\n.*\n(.*)/, x) end.()
-    |> List.last
-    |> fn(x) -> Regex.replace(~r/\<A.*?\>|\<\/A\>/, x, "" ) end.()
-    |> String.split(" ")
+    |> tap(s ~> Regex.run(~r/Faculty.*\n.*\n(.*)/, s)) # find list of prereq
+    |> List.last # get capture group
+    |> tap(s ~> Regex.replace(~r/\<A.*?\>|\<\/A\>/, s, "" )) #remove anchor tags
+    |> String.split(" ") # remove empty strings
     |> Enum.filter(&("" != &1))
-    |> Enum.join(" ")
+    |> Enum.join(" ") # return string
   end
 
   defp term(year, semester), do: year <> @semesters[semester]
@@ -89,10 +89,11 @@ defmodule UVic do
     end
 
     q = q ++ if (is_list subjects) do
-      Enum.map subjects, fn (x) -> {:sel_subj, x} end
+      Enum.map subjects, &({:sel_subj, &1})
     end
 
-    post!("bwckctlg.p_display_courses", URI.encode_query(q))
+    URI.encode_query(q)
+    |> tap(q ~> post!("bwckctlg.p_display_courses", q))
   end
 
   # course requirements
@@ -106,6 +107,6 @@ defmodule UVic do
       { :subj_code_in, subject },
       { :crse_numb_in, number } ]
     |> URI.encode_query
-    |> fn(x) -> post!("bwckctlg.p_disp_course_detail", x) end.()
+    |> tap(q ~> post!("bwckctlg.p_disp_course_detail", q))
   end
 end
