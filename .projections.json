@@ -1,0 +1,19 @@
+{
+  ".projections.json" : {
+    "type" : "projections"
+  },
+  "*" : {
+    "dispatch" : "mix test",
+    "start" : "iex -C mix"
+  },
+  "lib/*.ex" : {
+    "type" : "lib",
+    "alternate" : "test/{}_test.exs"
+  },
+  "test/*_test.exs" : {
+    "type" : "test",
+    "alternate" : "lib/{}.ex",
+    "dispatch" : "mix test test/{}_test.exs",
+    "template" : "defmodule {camelcase}Test do\n  use ExUnit.Case\n\n  test \"the truth\" do\n  end\nend"
+  }
+}
