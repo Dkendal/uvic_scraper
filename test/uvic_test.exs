@@ -26,7 +26,8 @@ defmodule UVicTest do
   test "course_requirements" do
     use_cassette "course_requirements" do
       result = UVic.course_requirements("2015", :spring, "SENG", "462")
-      assert "( SENG 330 or SENG 271 or SENG 299 or CENG 356 ) and ( CENG 460 or CSC 361 )" == result
+      assert  "( SENG 330 D or SENG 271 D or SENG 299 D or CENG 356 D ) and ( CENG 460 D or CSC 361 D )"== result
     end
   end
+
 end

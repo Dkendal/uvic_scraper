@@ -42,17 +42,19 @@ defmodule UVic do
   end
 
   def course_requirements(year, semester, subject, number) do
-    re = ~r{\<A.*?\>|\<\/A\>|Undergraduate|Minimum Grade of \D|level}
 
     disp_course_detail(year, semester, subject, number).body
     # html structure of source is ass so use regex :'(
     |> tap(s ~> Regex.run(~r/Faculty.*\n.*\n(.*)/, s)) # find list of prereq
     |> tap([_, match] ~> match)
-    |> String.replace(re, "") # remove unessessary characters
-    |> String.split(" ") # remove empty strings
+    |> String.replace(~r/\<A.*?\>|\<\/A\>/, "") # remove opening anchor tags
+    |> String.replace(~r/\(|\)/, " \\0 ") # pad parens
+    |> String.split(" ")
     |> Enum.filter(&(&1 != ""))
-    |> Enum.join " "
+    |> Enum.join(" ")
+    |> String.replace ~r/Undergraduate level ([A-Z]+ [0-9]+[A-Z]?) Minimum Grade of ([A-Z][+-]?)/, "\\1 \\2"
   end
+
 
   defp term(year, semester), do: year <> @semesters[semester]
 
