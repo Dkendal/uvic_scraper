@@ -4,6 +4,7 @@
   },
   "*" : {
     "dispatch" : "mix test",
+    "make" : "mix compile",
     "start" : "iex -C mix"
   },
   "lib/*.ex" : {
