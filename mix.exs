@@ -12,7 +12,14 @@ defmodule UvicScraper.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:floki, :httpoison, :logger, :reprise]]
+    [applications: [:floki, :httpoison, :logger] ++ dev_apps]
+  end
+
+  def dev_apps do
+    case Mix.env do
+      :dev -> [:reprise]
+      _ -> []
+    end
   end
 
   # Dependencies can be Hex packages:
@@ -27,11 +34,11 @@ defmodule UvicScraper.Mixfile do
   defp deps do
     [
       {:pattern_tap, "~> 0.2.1"},
-      {:exvcr, "~> 0.3.5"},
       {:httpoison, "~> 0.5"},
       {:floki, "~> 0.0.5"},
-      {:reprise, "~> 0.3.0"},
-      {:apex, "~>0.3.2"}
+      {:exvcr, "~> 0.3.5", only: :test},
+      {:reprise, "~> 0.3.0", only: :dev},
+      {:apex, "~>0.3.2", only: :dev}
     ]
   end
 end
