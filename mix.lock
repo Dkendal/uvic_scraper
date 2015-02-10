@@ -9,4 +9,5 @@
   "jsx": {:hex, :jsx, "2.4.0"},
   "meck": {:hex, :meck, "0.8.2"},
   "pattern_tap": {:hex, :pattern_tap, "0.2.1"},
-  "reprise": {:hex, :reprise, "0.3.0"}}
+  "reprise": {:hex, :reprise, "0.3.0"},
+  "zipper_tree": {:hex, :zipper_tree, "0.1.0"}}

@@ -36,6 +36,7 @@ defmodule UvicScraper.Mixfile do
       {:pattern_tap, "~> 0.2.1"},
       {:httpoison, "~> 0.5"},
       {:floki, "~> 0.0.5"},
+      {:zipper_tree, "~> 0.1.0"},
       {:exvcr, "~> 0.3.5", only: :test},
       {:reprise, "~> 0.3.0", only: :dev},
       {:apex, "~>0.3.2", only: :dev}
