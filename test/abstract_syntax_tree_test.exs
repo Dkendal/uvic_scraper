@@ -21,12 +21,29 @@ defmodule ASTTest do
   end
 
   test "parsing a complex rule" do
-    assert AST.parse("( SENG 330 D and CSC 350 D ) or CSC 400 D") == [
-      :or,
-      %AST.Course{subject: "CSC", number: "400", grade: "D" },
+    result = AST.parse( "( SENG 330 D or SENG 271 D or SENG 299 D or CENG 356 D ) and ( CENG 460 D or CSC 361 D )")
+
+    assert length(result) == 3
+    assert result == [
+      :and,
       [
-        :and,
-        %AST.Course{subject: "CSC", number: "350", grade: "D" },
-        %AST.Course{subject: "SENG", number: "330", grade: "D" }] ]
+        :or,
+        %AST.Course{grade: "D", number: "361", subject: "CSC"},
+        %AST.Course{grade: "D", number: "460", subject: "CENG"}
+      ],
+      [
+        :or,
+        %AST.Course{grade: "D", number: "356", subject: "CENG"},
+        [
+          :or,
+          %AST.Course{grade: "D", number: "299", subject: "SENG"},
+          [
+            :or,
+            %AST.Course{grade: "D", number: "271", subject: "SENG"},
+            %AST.Course{grade: "D", number: "330", subject: "SENG"}
+          ]
+        ]
+      ]
+    ]
   end
 end
