@@ -44,13 +44,15 @@ defmodule UVic do
     "https://www.uvic.ca/BAN2P/" <> url
   end
 
-  def course_list(year, semester, subjects, course_start..course_end) do
-    display_courses(year, semester, subjects, course_start, course_end).body
-    |> Floki.find(".nttitle")
-    |> Floki.find("a")
-    |> Enum.map fn(course) ->
-      [dep, course_number, _ | title] = Floki.text(course) |> String.split(" ")
-      { dep, course_number, Enum.join(title, " ") }
+  def course_list(year, semester) do
+    fn(subjects, course_start..course_end) ->
+      display_courses(year, semester, subjects, course_start, course_end).body
+      |> Floki.find(".nttitle")
+      |> Floki.find("a")
+      |> Enum.map fn(course) ->
+        [dep, course_number, _ | title] = Floki.text(course) |> String.split(" ")
+        { dep, course_number, Enum.join(title, " ") }
+      end
     end
   end
 
@@ -61,24 +63,24 @@ defmodule UVic do
     |> Floki.attribute("value")
   end
 
-  def course_requirements(year, semester, subject, number) do
-    disp_course_detail(year, semester, subject, number).body
-    # html structure of source is ass so use regex :'(
-    |> tap(s ~> Regex.run(~r/Faculty.*\n.*\n(.*)/, s)) # find list of prereq
-    |> tap([_, match] ~> match)
-    |> String.replace(~r/\<A.*?\>|\<\/A\>/, "") # remove opening anchor tags
-    |> String.replace(~r/\(|\)/, " \\0 ") # pad parens
-    |> String.split(" ")
-    |> Enum.filter(&(&1 != ""))
-    |> Enum.join(" ")
-    |> String.replace ~r/Undergraduate level ([A-Z]+ [0-9]+[A-Z]?) Minimum Grade of ([A-Z][+-]?)/, "\\1 \\2"
+  def course_requirements(year, semester) do
+    fn(subject, number) ->
+      disp_course_detail(year, semester, subject, number).body
+      # html structure of source is ass so use regex :'(
+      |> tap(s ~> Regex.run(~r/Faculty.*\n.*\n(.*)/, s)) # find list of prereq
+      |> tap([_, match] ~> match)
+      |> String.replace(~r/\<A.*?\>|\<\/A\>/, "") # remove opening anchor tags
+      |> String.replace(~r/\(|\)/, " \\0 ") # pad parens
+      |> String.split(" ")
+      |> Enum.filter(&(&1 != ""))
+      |> Enum.join(" ")
+      |> String.replace ~r/Undergraduate level ([A-Z]+ [0-9]+[A-Z]?) Minimum Grade of ([A-Z][+-]?)/, "\\1 \\2"
+    end
   end
 
   defp term(year, semester), do: year <> @semesters[semester]
 
-  defp display_courses(year, semester, subjects \\ [], course_start \\ "",
-  course_end \\ "") when is_list( subjects ) do
-
+  defp display_courses(year, semester, subjects \\ [], course_start \\ "", course_end \\ "") when is_list( subjects ) do
     q = [
       { :term_in,  term(year,semester) },
       { :sel_subj, ""},
