@@ -14,81 +14,63 @@ defmodule AbstractSyntaxTree do
     defstruct subject: nil, number: nil, grade: nil
   end
 
-  # pop off each elem until a left parens is reached
-  defp pop l, r \\ [] do
-    case l do
-      [] ->
-        { r, [] }
-
-      ["(" | t] ->
-        { r, ["("|t] }
-
-      [h|t] ->
-
-        pop(t, r ++ [h])
-    end
+  def bottom_up_parse [], r do
+    bottom_up_parse Enum.reverse(r), []
   end
 
-  # this is a modified version of Dijkstra's "shunting yard" alogrithim to
-  # generate an intermediate prefix notation version of the grammar
-  # http://en.wikipedia.org/wiki/Shunting-yard_algorithm
-
-  defp shunting_yard tokens, operator_stack \\ [], output_stack \\ [],
-    terminals_stack \\ []
-
-  defp shunting_yard [], [], output, [] do
-    output
+  def bottom_up_parse [ {:course, _} = h | t ], r do
+    bottom_up_parse t, [ { :expr, [ h ] } | r ]
   end
 
-  defp shunting_yard [], operators, output, [] do
-    Enum.reverse(operators) ++ output
+  def bottom_up_parse [ { :expr, _ } ] = h, [] do
+    bottom_up_parse [], [ { :start, h } ]
   end
 
-  defp shunting_yard(l, ops, output, term) when length(term) == 3 do
-    [subj, num, grade] = term
-    course = %Course{ subject: subj, number: num, grade: grade }
-    shunting_yard(l, ops, [course | output], [])
-  end
-
-  defp shunting_yard [h|t], ops, output, term do
-    case h do
-      "(" ->
-        shunting_yard t, ["(" | ops], output
-
-      ")" ->
-        {operators, ["(" | stack_tail]} = pop ops
-        shunting_yard t, stack_tail, operators ++ output
-
-      _ ->
-        if h in ["and", "or"] do
-          {operators, remainder} = pop(ops)
-          shunting_yard(t, [String.to_atom(h)|remainder], operators ++ output)
-        else
-          shunting_yard t, ops, output, term ++ [h]
-        end
-    end
-  end
-
-  defp build_tree([], r) do
+  def bottom_up_parse [ { :start, _ } ] = r, [] do
     r
   end
 
-  defp build_tree([h|t], r) when is_map h do
-    build_tree t, r ++ [ h ]
+  def bottom_up_parse [ { :subject, _ }, { :number, _ }, { :grade, _ } | t ] = l, r do
+    bottom_up_parse t, [ { :course, l -- t } | r ]
   end
 
-  defp build_tree([h|t], []) when is_atom h do
-    build_tree t, [h]
+  def bottom_up_parse [ { :lhs, _ }, { :expr, _ } = h, { :rhs, _ } | t ], r do
+    bottom_up_parse t, [ h | r ]
   end
 
-  defp build_tree([h|t], r) when is_atom h do
-    r ++ [build_tree(t, [h])]
+  def bottom_up_parse [ { :expr, _ }, { :op, _ }, { :expr, _ }| t ] = l, r do
+    bottom_up_parse t, [ { :expr, l -- t } | r ]
+  end
+    #[ lhs: _, expr: _, rhs: _ ] -> :expr
+    #[ expr: _, op: _, expr: _ ] -> :expr
+  def bottom_up_parse([h | t], r) when is_binary h do
+    subject = ~r/[A-Z]{2,}/
+    number =  ~r/[0-9]+[A-Z]?/
+    grade =   ~r/[A-F][+-]?/
+
+    result = case h do
+      "(" -> :lhs
+      ")" -> :rhs
+      "or" -> :op
+      "and" -> :op
+      _ ->
+        cond do
+          Regex.match?(subject, h) -> :subject
+          Regex.match?(number, h) -> :number
+          Regex.match?(grade, h) -> :grade
+        end
+    end
+
+    bottom_up_parse t, [{result, h } | r]
+  end
+
+  def bottom_up_parse [ h | t ], r do
+    bottom_up_parse t, [ h | r ]
   end
 
   def parse str do
     str
     |> String.split
-    |> shunting_yard
-    |> build_tree []
+    |> bottom_up_parse []
   end
 end

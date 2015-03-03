@@ -12,7 +12,7 @@ defmodule UvicScraper.Mixfile do
   #
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:floki, :httpoison, :logger] ++ dev_apps]
+    [applications: [:floki, :httpoison, :logger, :dbg] ++ dev_apps]
   end
 
   def dev_apps do
@@ -38,6 +38,8 @@ defmodule UvicScraper.Mixfile do
       {:floki, "~> 0.0.5"},
       {:zipper_tree, "~> 0.1.0"},
       {:exvcr, "~> 0.3.5", only: :test},
+      {:ex_spec, "~> 0.3.0", only: :test},
+      {:dbg, only: [:dev, :test]},
       {:reprise, "~> 0.3.0", only: :dev},
       {:apex, "~>0.3.2", only: :dev}
     ]

@@ -1,4 +1,6 @@
 %{"apex": {:hex, :apex, "0.3.2"},
+  "dbg": {:hex, :dbg, "1.0.0"},
+  "ex_spec": {:hex, :ex_spec, "0.3.0"},
   "exactor": {:hex, :exactor, "0.7.0"},
   "exjsx": {:hex, :exjsx, "3.1.0"},
   "exvcr": {:hex, :exvcr, "0.3.8"},
