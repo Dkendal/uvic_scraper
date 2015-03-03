@@ -1,3 +1,35 @@
+# course listings
+# /BAN2P/bwckctlg.p_display_courses?
+#   term_in=201501
+#   one_subj=CSC
+#   sel_crse_strt=320
+#   sel_crse_end=320
+#   sel_subj=
+#   sel_levl=
+#   sel_schd=
+#   sel_coll=
+#   sel_divs=
+#   sel_dept=
+#   sel_attr=
+
+# course requirements
+# /BAN2P/bwckctlg.p_disp_course_detail?
+#   cat_term_in=201501
+#   subj_code_in=CSC
+#   crse_numb_in=320
+
+# class schedules
+# /BAN2P/bwckctlg.p_disp_listcrse?
+#   term_in=201501
+#   subj_in=CSC
+#   crse_in=320
+#   schd_in=
+
+# class size information
+# /BAN2P/bwckschd.p_disp_detail_sched?
+#   term_in=201501
+#   crn_in=20711
+
 defmodule UVic do
   use HTTPoison.Base
   use PatternTap
@@ -11,18 +43,6 @@ defmodule UVic do
   def process_url(url) do
     "https://www.uvic.ca/BAN2P/" <> url
   end
-
-  # class schedules
-  # /BAN2P/bwckctlg.p_disp_listcrse?
-  #   term_in=201501
-  #   subj_in=CSC
-  #   crse_in=320
-  #   schd_in=
-
-  # class size information
-  # /BAN2P/bwckschd.p_disp_detail_sched?
-  #   term_in=201501
-  #   crn_in=20711
 
   def course_list(year, semester, subjects, course_start..course_end) do
     display_courses(year, semester, subjects, course_start, course_end).body
@@ -42,7 +62,6 @@ defmodule UVic do
   end
 
   def course_requirements(year, semester, subject, number) do
-
     disp_course_detail(year, semester, subject, number).body
     # html structure of source is ass so use regex :'(
     |> tap(s ~> Regex.run(~r/Faculty.*\n.*\n(.*)/, s)) # find list of prereq
@@ -55,24 +74,10 @@ defmodule UVic do
     |> String.replace ~r/Undergraduate level ([A-Z]+ [0-9]+[A-Z]?) Minimum Grade of ([A-Z][+-]?)/, "\\1 \\2"
   end
 
-
   defp term(year, semester), do: year <> @semesters[semester]
 
-  # course listings
-  # /BAN2P/bwckctlg.p_display_courses?
-  #   term_in=201501
-  #   one_subj=CSC
-  #   sel_crse_strt=320
-  #   sel_crse_end=320
-  #   sel_subj=
-  #   sel_levl=
-  #   sel_schd=
-  #   sel_coll=
-  #   sel_divs=
-  #   sel_dept=
-  #   sel_attr=
   defp display_courses(year, semester, subjects \\ [], course_start \\ "",
-    course_end \\ "") when is_list( subjects ) do
+  course_end \\ "") when is_list( subjects ) do
 
     q = [
       { :term_in,  term(year,semester) },
@@ -100,11 +105,6 @@ defmodule UVic do
     |> tap(q ~> post!("bwckctlg.p_display_courses", q))
   end
 
-  # course requirements
-  # /BAN2P/bwckctlg.p_disp_course_detail?
-  #   cat_term_in=201501
-  #   subj_code_in=CSC
-  #   crse_numb_in=320
   defp disp_course_detail year, semester, subject, number do
     [
       { :cat_term_in, term(year, semester) },
