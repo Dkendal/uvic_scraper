@@ -26,7 +26,7 @@ defmodule AST do
     bottom_up_parse t, [ h | r ]
   end
 
-  def bottom_up_parse [ { :expr, _ } = a, { :op, o }, { :expr, _ } = b | t ] = l, r do
+  def bottom_up_parse [ { :expr, _ } = a, { :op, o }, { :expr, _ } = b | t ], r do
     a = simplify_expr a
     b = simplify_expr b
     bottom_up_parse t, [ { :expr, [ { String.to_atom(o), [a, b] } ] } | r ]
