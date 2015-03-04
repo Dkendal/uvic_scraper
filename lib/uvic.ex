@@ -44,7 +44,7 @@ defmodule UVic do
     "https://www.uvic.ca/BAN2P/" <> url
   end
 
-  def course_list(year, semester) do
+  def courses(year, semester) do
     fn(subjects, course_start..course_end) ->
       display_courses(year, semester, subjects, course_start, course_end).body
       |> Floki.find(".nttitle")
@@ -56,14 +56,14 @@ defmodule UVic do
     end
   end
 
-  def subject_list(year, semester) do
+  def subjects(year, semester) do
     display_courses(year, semester).body
     |> Floki.find("#subj_id")
     |> Floki.find("option")
     |> Floki.attribute("value")
   end
 
-  def course_requirements(year, semester) do
+  def requirements(year, semester) do
     fn(subject, number) ->
       disp_course_detail(year, semester, subject, number).body
       # html structure of source is ass so use regex :'(
