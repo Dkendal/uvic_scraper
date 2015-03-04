@@ -1,6 +1,5 @@
 defmodule ASTTest do
   use ExSpec
-  alias AbstractSyntaxTree, as: AST
 
   @tag timeout: 100
   describe "bottom_up_parse" do
@@ -14,7 +13,6 @@ defmodule ASTTest do
               course: [ subject: "BBBB", number: "200", grade: "D" ] ],
             course: [ subject: "CCCC", number: "300", grade: "A+" ] ] ]
       end
-
     end
   end
 end

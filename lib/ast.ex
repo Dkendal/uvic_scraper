@@ -1,19 +1,4 @@
-defmodule AbstractSyntaxTree do
-  # CFG for requirements
-  #=====================
-  # EXPR = '(' EXPR ')'
-  # EXPR = EXPR 'or' EXPR
-  # EXPR = EXPR 'and' EXPR
-  # EXPR = COURSE
-  # COURSE = subject number grade
-  # subject = [A-Z]{2,}
-  # number = [0-9]+[A-Z]?
-  # grade = [A-F][+-]?
-
-  defmodule Course do
-    defstruct subject: nil, number: nil, grade: nil
-  end
-
+defmodule AST do
   defp simplify_expr { :expr, h } do
     case h do
       [h] -> h
