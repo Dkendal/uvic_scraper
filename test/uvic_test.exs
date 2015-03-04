@@ -9,7 +9,7 @@ defmodule UVicTest do
   describe "courses" do
     it "returns all courses for the given query" do
       use_cassette "courses_csc" do
-        result = UVic.courses("2015", :spring).(["CSC"], "100".."140")
+        result = UVic.courses"2015", :spring, ["CSC"], "100".."140"
         assert is_list result
         assert is_tuple hd result
         assert {"CSC", "100", "ELEMENTARY COMPUTING"} == hd( result )
@@ -30,7 +30,7 @@ defmodule UVicTest do
   describe "requirements" do
     it "returns the requirements for the course" do
       use_cassette "requirements" do
-        result = UVic.requirements("2015", :spring).("SENG", "462")
+        result = UVic.requirements "2015", :spring, "SENG", "462"
         assert  "( SENG 330 D or SENG 271 D or SENG 299 D or CENG 356 D ) and ( CENG 460 D or CSC 361 D )"== result
       end
     end
