@@ -12,4 +12,4 @@
   "meck": {:hex, :meck, "0.8.2"},
   "pattern_tap": {:hex, :pattern_tap, "0.2.1"},
   "reprise": {:hex, :reprise, "0.3.0"},
-  "zipper_tree": {:hex, :zipper_tree, "0.1.0"}}
+  "zipper_tree": {:git, "git://github.com/dkendal/zipper_tree.git", "2967ef9667a6d494e6fbdfb49c4774707100d0c4", [branch: "v2"]}}
